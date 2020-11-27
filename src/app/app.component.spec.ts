@@ -1,40 +1,29 @@
-import { TestBed, async } from "@angular/core/testing";
-import { AppComponent } from "./app.component";
-import { EsriMapComponent } from "./esri-map/esri-map.component";
+import { TestBed } from '@angular/core/testing';
+import { AppComponent } from './app.component';
 
-describe("AppComponent", () => {
-  let fixture;
-  let app;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [AppComponent, EsriMapComponent]
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
     }).compileComponents();
-
-    fixture = TestBed.createComponent(AppComponent);
-    app = fixture.debugElement.componentInstance;
   });
 
-  it("should create the app", async(() => {
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-  }));
+  });
 
-  it("should set zoom level", async(() => {
-    expect(app.mapZoomLevel).toEqual(jasmine.any(Number));
-  }));
+  it(`should have as title 'angular-cli-esri-map'`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('angular-cli-esri-map');
+  });
 
-  it("should set basemap type", async(() => {
-    expect(app.basemapType).toEqual(jasmine.any(String));
-    expect(app.basemapType).toEqual("satellite");
-  }));
-
-  it("should set map center location", async(() => {
-    expect(app.mapCenter).toEqual(jasmine.any(Array));
-    expect(app.mapCenter.length).toEqual(2);
-  }));
-
-  it("zoom has a default value", async(() => {
-    expect(app.mapZoomLevel).toBeGreaterThanOrEqual(0);
-    expect(app.mapZoomLevel).toBeLessThanOrEqual(24);
-  }));
+  it('should render title', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('.content span').textContent).toContain('angular-cli-esri-map app is running!');
+  });
 });
