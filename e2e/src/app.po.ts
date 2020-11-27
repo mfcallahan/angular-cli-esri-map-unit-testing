@@ -1,13 +1,11 @@
-import { browser, by, element } from "protractor";
+import { browser, by, element } from 'protractor';
 
 export class AppPage {
-  navigateTo() {
-    return browser.get(browser.baseUrl) as Promise<any>;
+  async navigateTo(): Promise<unknown> {
+    return browser.get(browser.baseUrl);
   }
 
-  getApiUrl() {
-    return element(by.className("api-url")).getAttribute("href") as Promise<
-      string
-    >;
+  async getTitleText(): Promise<string> {
+    return element(by.css('app-root .content span')).getText();
   }
 }
