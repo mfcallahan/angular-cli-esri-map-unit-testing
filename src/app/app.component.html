@@ -1,5 +1,11 @@
-<mat-toolbar color="primary"> Angular CLI & Esri </mat-toolbar>
-<app-map></app-map>
-<!-- <div fxLayout="row" fxFill>
-  <app-map></app-map>
-</div> -->
+<div class="appContent" fxLayout="column">
+  <mat-toolbar color="primary" fxLayout="row">
+    <span fxFlex fxLayoutAlign="start none">Angular CLI & Esri</span>
+    <div fxFlex fxLayoutAlign="end none" fxLayoutGap="10px">
+      <a href="#" mat-raised-button color="accent">Load Data 1</a>
+      <a href="#" mat-raised-button color="accent">Load Data 2</a>
+      <a href="#" mat-raised-button color="accent">Load Data 3</a>
+    </div>
+  </mat-toolbar>
+  <app-map fxFlex></app-map>
+</div>
