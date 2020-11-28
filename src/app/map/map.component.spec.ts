@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBase } from 'src/testBase';
 
 import { MapComponent } from './map.component';
 
@@ -8,9 +9,8 @@ describe('MapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MapComponent ]
-    })
-    .compileComponents();
+      declarations: [MapComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +19,11 @@ describe('MapComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  afterEach(() => {
+    TestBase.testTearDown(fixture);
+  });
+
+  it('should create MapComponent', () => {
     expect(component).toBeTruthy();
   });
 });
