@@ -40,9 +40,12 @@
       "type": "chrome",
       "request": "attach",
       "address": "localhost",
-      "port": 9333,
+      "port": 9222,
       "sourceMaps": true,
-      "webRoot": "${workspaceRoot}"
+      "pathMapping": {
+        "/": "${workspaceRoot}/",
+        "/base/": "${workspaceRoot}/"
+      }
     },
     {
       "name": "ng e2e",
