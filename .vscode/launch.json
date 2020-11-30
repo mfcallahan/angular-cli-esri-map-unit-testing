@@ -42,10 +42,7 @@
       "address": "localhost",
       "port": 9222,
       "sourceMaps": true,
-      "pathMapping": {
-        "/": "${workspaceRoot}/",
-        "/base/": "${workspaceRoot}/"
-      }
+      "webRoot": "${workspaceRoot}"
     },
     {
       "name": "ng e2e",
