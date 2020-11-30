@@ -1,9 +1,9 @@
-import { Injectable, InjectionToken } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { loadCss, loadModules } from 'esri-loader';
 import { IArcGisWrapperService } from 'src/app/interfaces/iArcGisWrapperService';
 import { EnvironmentService } from 'src/app/services/environment.service';
-import esri = __esri;
 
+// This class acts as a wrapper for methods available in the esri-loader npm package.
 @Injectable({
   providedIn: 'root',
 })

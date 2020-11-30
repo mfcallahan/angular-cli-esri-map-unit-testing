@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
-import esri = __esri;
 import { EnvironmentService } from 'src/app/services/environment.service';
 import { IArcGisWrapperService } from 'src/app/interfaces/iArcGisWrapperService';
 import { ArcGisWrapperServiceProvider } from 'src/app/services/arcGisWrapper/arcGisWrapperServiceProvider';
+import esri = __esri;
 
 @Component({
   selector: 'app-map',
@@ -21,6 +21,10 @@ export class MapComponent implements OnInit {
 
   constructor(
     private readonly environment: EnvironmentService,
+    // Interfaces are a design time concept in TypeScript and are not available at run time, so the constructor
+    // parameter for arcGisWrapperService is marked with the @Inject() decorator. The DI framework will use a
+    // custom provider for this dependency, injecting a concrete implementation of IArcGisWrapperService which is
+    // defined in ArcGisWrapperServiceProvider.
     @Inject(ArcGisWrapperServiceProvider)
     private readonly arcGisWrapperService: IArcGisWrapperService
   ) {

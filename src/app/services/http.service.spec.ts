@@ -25,7 +25,7 @@ describe('HttpService', () => {
     [HttpTestingController, HttpService],
     (httpMock: HttpTestingController, httpService: HttpService) => {
       const mockParams = new HttpParams().set('foo', 'bar').set('baz', 'qux');
-      const mockHeaders = new HttpHeaders().set('x-foo-bar', 'baz');
+      const mockHeaders = new HttpHeaders().set('x-foo-bar', 'xyzzy');
       const mockResponse = {
         foo: 'bar',
         baz: 100,
