@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ILoadScriptOptions, loadModules } from 'esri-loader';
+import { Component, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
 import esri = __esri;
 import { EnvironmentService } from 'src/app/services/environment.service';
+import { IArcGisWrapperService } from '../interfaces/iArcGisWrapperService';
+import { ArcGisWrapperServiceProvider } from '../services/arcGisWrapper.service';
 
 @Component({
   selector: 'app-map',
@@ -17,17 +18,17 @@ export class MapComponent implements OnInit {
   defaultCenterLon: number;
   defaultZoom: number;
   defaultBaseMap: string;
-  defaultLoadScriptOptions: ILoadScriptOptions;
 
-  constructor(private readonly environment: EnvironmentService) {
+  constructor(
+    private readonly environment: EnvironmentService,
+    @Inject(ArcGisWrapperServiceProvider)
+    private readonly arcGisWrapperService: IArcGisWrapperService
+  ) {
     // Set default map center and zoom to continental USA
     this.defaultCenterLat = 39.83;
     this.defaultCenterLon = -98.58;
     this.defaultZoom = 5;
     this.defaultBaseMap = 'streets';
-    this.defaultLoadScriptOptions = {
-      url: this.environment.baseConfigs.arcgisJsApiSettings.apiUrl,
-    };
   }
 
   async ngOnInit(): Promise<void> {
@@ -35,7 +36,7 @@ export class MapComponent implements OnInit {
   }
 
   private async initDefaultMap(): Promise<void> {
-    const [Map, MapView] = await this.loadModulesWrapper(['esri/Map', 'esri/views/MapView']);
+    const [Map, MapView] = await this.arcGisWrapperService.loadModules(['esri/Map', 'esri/views/MapView']);
 
     this.map = new Map({
       basemap: this.defaultBaseMap,
@@ -55,7 +56,7 @@ export class MapComponent implements OnInit {
   }
 
   private async addBaseMapToggle(): Promise<void> {
-    const [BasemapToggle] = await this.loadModulesWrapper(['esri/widgets/BasemapToggle']);
+    const [BasemapToggle] = await this.arcGisWrapperService.loadModules(['esri/widgets/BasemapToggle']);
 
     const toggle: esri.BasemapToggle = new BasemapToggle({
       view: this.mapView,
@@ -63,9 +64,5 @@ export class MapComponent implements OnInit {
     });
 
     this.mapView?.ui.add(toggle, 'top-left');
-  }
-
-  private async loadModulesWrapper(modules: string[]): Promise<any[]> {
-    return await loadModules(modules, this.defaultLoadScriptOptions);
   }
 }
