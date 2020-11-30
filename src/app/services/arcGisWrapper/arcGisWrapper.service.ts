@@ -1,13 +1,8 @@
 import { Injectable, InjectionToken } from '@angular/core';
 import { loadCss, loadModules } from 'esri-loader';
-import { IArcGisWrapperService } from '../interfaces/iArcGisWrapperService';
-import { EnvironmentService } from './environment.service';
+import { IArcGisWrapperService } from 'src/app/interfaces/iArcGisWrapperService';
+import { EnvironmentService } from 'src/app/services/environment.service';
 import esri = __esri;
-
-export const ArcGisWrapperServiceProvider = new InjectionToken('AuthenticationProvider', {
-  providedIn: 'root',
-  factory: () => new ArcGisWrapperService(new EnvironmentService()),
-});
 
 @Injectable({
   providedIn: 'root',

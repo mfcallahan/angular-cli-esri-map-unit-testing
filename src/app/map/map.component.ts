@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
 import esri = __esri;
 import { EnvironmentService } from 'src/app/services/environment.service';
-import { IArcGisWrapperService } from '../interfaces/iArcGisWrapperService';
-import { ArcGisWrapperServiceProvider } from '../services/arcGisWrapper.service';
+import { IArcGisWrapperService } from 'src/app/interfaces/iArcGisWrapperService';
+import { ArcGisWrapperServiceProvider } from 'src/app/services/arcGisWrapper/arcGisWrapperServiceProvider';
 
 @Component({
   selector: 'app-map',

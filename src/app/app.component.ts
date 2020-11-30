@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { IArcGisWrapperService } from './interfaces/iArcGisWrapperService';
-import { ArcGisWrapperServiceProvider } from './services/arcGisWrapper.service';
+import { ArcGisWrapperServiceProvider } from 'src/app/services/arcGisWrapper/arcGisWrapperServiceProvider';
 import { EnvironmentService } from './services/environment.service';
 
 @Component({
