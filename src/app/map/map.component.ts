@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { EnvironmentService } from 'src/app/services/environment.service';
-import { MapService } from '../services/map.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-map',
@@ -9,13 +8,13 @@ import { MapService } from '../services/map.service';
 })
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapView', { static: false })
-  private mapElementRef?: ElementRef;
+  mapElementRef?: ElementRef;
   defaultCenterLat: number;
   defaultCenterLon: number;
   defaultZoom: number;
   defaultBaseMap: string;
 
-  constructor(private readonly environment: EnvironmentService, private readonly mapService: MapService) {
+  constructor(readonly mapService: MapService) {
     // Set default map center and zoom to continental USA
     this.defaultCenterLat = 39.83;
     this.defaultCenterLon = -98.58;
