@@ -36,7 +36,7 @@ export class MapComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.initDefaultMap();
+    await this.initDefaultMap();
   }
 
   private async initDefaultMap(): Promise<void> {
@@ -56,7 +56,7 @@ export class MapComponent implements OnInit {
       },
     });
 
-    this.addBaseMapToggle();
+    await this.addBaseMapToggle();
   }
 
   private async addBaseMapToggle(): Promise<void> {

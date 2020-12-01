@@ -30,5 +30,10 @@ describe('MapComponent', () => {
 
   it('should initialize MapComponent', () => {
     expect(component).toBeTruthy();
+
+    // Assert that component was created correctly, and private methods called from ngOnInit() have
+    // initialized properties as expected.
+    expect(component.map).not.toBeUndefined();
+    expect(component.mapView).not.toBeUndefined();
   });
 });

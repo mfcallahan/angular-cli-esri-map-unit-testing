@@ -8,7 +8,8 @@
       "preLaunchTask": "npm: start",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}",
-      "runtimeArgs": ["--disable-web-security"]
+      "runtimeArgs": ["--disable-web-security"],
+      "smartStep": true
     },
     {
       "name": "Launch app: Firefox",
@@ -24,8 +25,7 @@
       "request": "launch",
       "preLaunchTask": "npm: start-production",
       "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}",
-      "runtimeArgs": ["--disable-web-security"]
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "Launch app (production): Firefox",
@@ -39,10 +39,11 @@
       "name": "Debug tests: Chrome",
       "type": "chrome",
       "request": "attach",
-      "address": "localhost",
       "port": 9222,
       "sourceMaps": true,
-      "webRoot": "${workspaceRoot}"
+      "webRoot": "${workspaceRoot}",
+      "skipFiles": ["${workspaceRoot}/node_modules/**/*.js", "<node_internals>/**/*.js"],
+      "smartStep": true
     },
     {
       "name": "ng e2e",
