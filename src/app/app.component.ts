@@ -8,10 +8,7 @@ import { EsriLoaderWrapperService } from './services/esriLoaderWrapper.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(
-    private readonly environment: EnvironmentService,
-    private readonly esriLoaderWrapperService: EsriLoaderWrapperService
-  ) {}
+  constructor(readonly environment: EnvironmentService, readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
 
   ngOnInit(): void {
     // Load the ArcGIS JS API styles on app init, inserting the stylesheet link above the first <style> tag on
