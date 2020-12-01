@@ -1,7 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { IArcGisWrapperService } from './interfaces/iArcGisWrapperService';
-import { ArcGisWrapperServiceProvider } from 'src/app/services/arcGisWrapper/arcGisWrapperServiceProvider';
+import { Component, OnInit } from '@angular/core';
 import { EnvironmentService } from './services/environment.service';
+import { EsriLoaderWrapperService } from './services/esriLoaderWrapper.service';
 
 @Component({
   selector: 'app-root',
@@ -11,15 +10,14 @@ import { EnvironmentService } from './services/environment.service';
 export class AppComponent implements OnInit {
   constructor(
     private readonly environment: EnvironmentService,
-    @Inject(ArcGisWrapperServiceProvider)
-    private readonly arcGisWrapperService: IArcGisWrapperService
+    private readonly esriLoaderWrapperService: EsriLoaderWrapperService
   ) {}
 
   ngOnInit(): void {
     // Load the ArcGIS JS API styles on app init, inserting the stylesheet link above the first <style> tag on
     // the page so that ArcGIS styles can be overridden, if needed. See:
     // https://github.com/Esri/esri-loader#overriding-arcgis-styles
-    this.arcGisWrapperService.loadCss(
+    this.esriLoaderWrapperService.loadCss(
       this.environment.baseConfigs.arcgisJsApiSettings.cssUrl,
       'link[rel="stylesheet"]'
     );

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ArcGisWrapperService } from './arcGisWrapper.service';
+import { EsriLoaderWrapperService } from './esriLoaderWrapper.service';
 
 describe('ArcgisService', () => {
-  let service: ArcGisWrapperService;
+  let service: EsriLoaderWrapperService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ArcGisWrapperService);
+    service = TestBed.inject(EsriLoaderWrapperService);
   });
 
   it('should be created', () => {

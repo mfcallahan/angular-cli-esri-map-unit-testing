@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { loadCss, loadModules } from 'esri-loader';
-import { IArcGisWrapperService } from 'src/app/interfaces/iArcGisWrapperService';
 import { EnvironmentService } from 'src/app/services/environment.service';
 
-// This class acts as a wrapper for methods available in the esri-loader npm package.
+// This class acts as a wrapper for methods available in the esri-loader npm package so that they can be
+// more easily mocked during testing.
 @Injectable({
   providedIn: 'root',
 })
-export class ArcGisWrapperService implements IArcGisWrapperService {
+export class EsriLoaderWrapperService {
   constructor(private readonly environment: EnvironmentService) {}
 
   public loadCss(url: string, before: string): void {
