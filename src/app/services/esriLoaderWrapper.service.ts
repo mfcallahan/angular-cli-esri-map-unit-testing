@@ -18,4 +18,8 @@ export class EsriLoaderWrapperService {
       url: this.environment.baseConfigs.arcgisJsApiSettings.apiUrl,
     });
   }
+
+  public getInstance<T>(type: new (paramObj: any) => T, paramObj?: any): T {
+    return new type(paramObj);
+  }
 }

@@ -1,4 +1,4 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { ElementRef, Injectable, Type } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import esri = __esri; // Esri types
 
@@ -25,11 +25,9 @@ export class MapService {
       'esri/widgets/BasemapToggle',
     ]);
 
-    const map = new Map({
-      basemap,
-    });
+    const map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
 
-    this.mapView = new MapView({
+    this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
       map,
       center: [centerLon, centerLat],
       zoom,
@@ -39,7 +37,7 @@ export class MapService {
       },
     });
 
-    const toggle: esri.BasemapToggle = new BasemapToggle({
+    const toggle = this.esriLoaderWrapperService.getInstance<esri.BasemapToggle>(BasemapToggle, {
       view: this.mapView,
       nextBasemap: 'hybrid',
     });
