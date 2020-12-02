@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { EnvironmentService } from './services/environment.service';
-import { EsriLoaderWrapperService } from './services/esriLoaderWrapper.service';
+import { EnvironmentService } from 'src/app/services/environment.service';
+import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 
 @Component({
   selector: 'app-root',

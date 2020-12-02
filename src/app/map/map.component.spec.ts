@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestBase } from 'src/test/testBase';
-import { EnvironmentService } from '../services/environment.service';
-import { EsriLoaderWrapperService } from '../services/esriLoaderWrapper.service';
-import { MapService } from '../services/map.service';
+import { MapService } from 'src/app/services/map.service';
 
 import { MapComponent } from './map.component';
 

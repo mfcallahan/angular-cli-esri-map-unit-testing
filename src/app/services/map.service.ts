@@ -1,5 +1,5 @@
 import { ElementRef, Injectable } from '@angular/core';
-import { EsriLoaderWrapperService } from './esriLoaderWrapper.service';
+import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import esri = __esri; // Esri types
 
 // This class encapsulates the Esri MapView and methods to manipulate the map. It is a singleton service, provided in
@@ -19,7 +19,11 @@ export class MapService {
     zoom: number,
     mapElementRef?: ElementRef
   ): Promise<void> {
-    const [Map, MapView] = await this.esriLoaderWrapperService.loadModules(['esri/Map', 'esri/views/MapView']);
+    const [Map, MapView, BasemapToggle] = await this.esriLoaderWrapperService.loadModules([
+      'esri/Map',
+      'esri/views/MapView',
+      'esri/widgets/BasemapToggle',
+    ]);
 
     const map = new Map({
       basemap,
@@ -34,12 +38,6 @@ export class MapService {
         components: ['attribution'],
       },
     });
-
-    this.addBaseMapToggle();
-  }
-
-  private async addBaseMapToggle(): Promise<void> {
-    const [BasemapToggle] = await this.esriLoaderWrapperService.loadModules(['esri/widgets/BasemapToggle']);
 
     const toggle: esri.BasemapToggle = new BasemapToggle({
       view: this.mapView,
