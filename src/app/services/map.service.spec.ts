@@ -35,12 +35,13 @@ fdescribe('MapService', () => {
     const zoom = 10;
     const elementRef = new ElementRef(null);
 
-    spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
+    const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
       Promise.resolve([FakeModule, FakeMapViewModule, FakeModule])
     );
 
     await service.initDefaultMap(basemap, centerLon, centerLat, zoom, elementRef);
 
+    expect(loadModulesSpy).toHaveBeenCalled();
     expect(service.mapView).not.toBeUndefined();
   });
 });
