@@ -23,7 +23,7 @@ async initDefaultMap(): Promise<void> {
 }
 ```
 
-However, this can make unit testing difficult, as the system under test does not have any reference to the objects in an ArcGIS API module until an HTTP request is made to fetch it. A test for the `initDefaultMap()` method will call `loadModules()` and make HTTP requests to arcgis.com to fetch the resources needed. This may not be desireable for a few reasons:
+However, this can make unit testing difficult, as the system under test does not have any reference to the objects in an ArcGIS API module until an HTTP request is made to fetch it. A test for the `initDefaultMap()` method will call `loadModules()` and make HTTP requests to arcgis.com to fetch the resources needed. This may not be desirable for a few reasons:
 
 - The test becomes more like an integration test; we want to assert the `component.mapView` was correctly set inside `loadModules()`, not test that the application could connect to the internet and fetch dependencies.
 
