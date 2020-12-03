@@ -42,3 +42,39 @@ it('should initialize a default map', async () => {
 ### My solution
 
 Difficult to mock code is difficult to test! By refactoring the application code to leverage the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection), the tight coupling between the above `initDefaultMap()` method and the [esri-loader](https://github.com/Esri/esri-loader) can be eliminated. The [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern) can be used, creating a wrapper class for the `loadModules()` method in the [esri-loader](https://github.com/Esri/esri-loader) which can then be injected into the class that has a dependency on ArcGIS API modules. The wrapper class exposes its own `loadModules()` method which can be easily mocked, eliminating HTTP requests to the ArcGIS CDN in a test suite. A library such as [TypeMoq](https://github.com/florinn/typemoq) can be used to create mock instances of the various ArcGIS API modules.
+
+```typescript
+// Singleton service wrapper class for esri-loader
+import { Injectable } from '@angular/core';
+import { loadModules } from 'esri-loader';
+
+@Injectable({ providedIn: 'root' })
+export class EsriLoaderWrapperService {
+  constructor() {}
+
+  public async loadModules(modules: string[]): Promise<any[]> {
+    return await loadModules(modules);
+  }
+}
+
+// Test suite
+describe('MapService', () => {
+  // ...
+
+  it('should initialize a default map', async () => {
+    // Mocked instances of ArcGIS API modules
+    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+
+    // Mocked behavior of loadModules() method - HTTP requests will not be made
+    const loadModulesSpy = spyOn(component.esriLoaderWrapperService, 'loadModules').and.returnValue(
+      Promise.resolve([mockMap, mockMapView])
+    );
+
+    await component.initDefaultMap();
+
+    expect(loadModulesSpy).toHaveBeenCalled();
+    expect(component.mapView).not.toBeUndefined();
+  });
+});
+```
