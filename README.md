@@ -1,6 +1,6 @@
 ## angular-cli-esri-map-unit-testing
 
-An approach for unit testing an Angular CLI application which uses the [esri-loader](https://github.com/Esri/esri-loader) to lazy load [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/) modules, using the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and the [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern).
+An approach for unit testing an Angular CLI application which uses the [esri-loader](https://github.com/Esri/esri-loader) to lazy load [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/) modules.
 
 ### The problem
 
@@ -41,4 +41,4 @@ it('should initialize a default map', async () => {
 
 ### My solution
 
-Difficult to mock code is difficult to test! By refactoring the application code to leverage the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) the tight coupling between the above `initDefaultMap()` method and the [esri-loader](https://github.com/Esri/esri-loader) can be eliminated. The [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern) can be used, creating a wrapper class for the `loadModules()` method in the [esri-loader](https://github.com/Esri/esri-loader) which can then be injected into the class that has a dependency on ArcGIS API modules. The wrapper class exposes its own `loadModules()` method which can be easily mocked, eliminating HTTP requests to the ArcGIS CDN in a test suite. A library such as [TypeMoq](https://github.com/florinn/typemoq) can be used to create mock instances of the various ArcGIS API modules.
+Difficult to mock code is difficult to test! By refactoring the application code to leverage the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection), the tight coupling between the above `initDefaultMap()` method and the [esri-loader](https://github.com/Esri/esri-loader) can be eliminated. The [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern) can be used, creating a wrapper class for the `loadModules()` method in the [esri-loader](https://github.com/Esri/esri-loader) which can then be injected into the class that has a dependency on ArcGIS API modules. The wrapper class exposes its own `loadModules()` method which can be easily mocked, eliminating HTTP requests to the ArcGIS CDN in a test suite. A library such as [TypeMoq](https://github.com/florinn/typemoq) can be used to create mock instances of the various ArcGIS API modules.
