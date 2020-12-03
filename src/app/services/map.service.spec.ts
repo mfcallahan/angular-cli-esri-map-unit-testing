@@ -34,7 +34,7 @@ describe('MapService', () => {
 
     const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
     mockDefaultUi
-      .setup((m) => m.add(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+      .setup((m) => m.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()))
       .returns((): void => {
         return;
       });
@@ -66,6 +66,6 @@ describe('MapService', () => {
     // Assert
     expect(loadModulesSpy).toHaveBeenCalled();
     expect(service.mapView).not.toBeUndefined();
-    // expect(service.mapView?.center).not.toBeUndefined();
+    mockDefaultUi.verify((m) => m.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.atLeastOnce());
   });
 });
