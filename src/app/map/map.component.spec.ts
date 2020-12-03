@@ -3,17 +3,17 @@ import { TestBase } from 'src/test/testBase';
 import { MapService } from 'src/app/services/map.service';
 
 import { MapComponent } from './map.component';
+import { AppComponent } from '../app.component';
 
 describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let initDefaultMapSpy: jasmine.Spy;
-  const mockMapService = { initDefaultMap: () => {} };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MapComponent],
-      providers: [{ provide: MapService, useValue: mockMapService }],
+      providers: [MapService],
     }).compileComponents();
   });
 

@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EnvironmentService } from './services/environment.service';
 import { TestBase } from 'src/test/testBase';
 import { AppComponent } from './app.component';
+import { MaterialModule } from './material.module';
+import { MapComponent } from './map/map.component';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -10,7 +12,8 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      declarations: [AppComponent, MapComponent],
+      imports: [MaterialModule],
       providers: [EnvironmentService],
     }).compileComponents();
   });

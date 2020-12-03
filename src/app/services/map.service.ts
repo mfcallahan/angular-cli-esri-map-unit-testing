@@ -3,7 +3,7 @@ import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.ser
 import esri = __esri; // Esri types
 
 // This class encapsulates the Esri MapView and methods to manipulate the map. It is a singleton service, provided in
-// the application root so that it can be injected into any component which needs to get or set map data.
+// the application root so that it can be injected into any component which needs to access the ArcGIS map.
 @Injectable({
   providedIn: 'root',
 })
