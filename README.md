@@ -1,3 +1,44 @@
-# angular-cli-esri-map-unit-testing
+## angular-cli-esri-map-unit-testing
 
-An approach for unit testing an Angular application which uses the esri-loader to lazy load ArcGIS API for JavaScript modules
+An approach for unit testing an Angular CLI application which uses the [esri-loader](https://github.com/Esri/esri-loader) to lazy load [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/) modules, using the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and the [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern).
+
+### The problem
+
+The [esri-loader](https://github.com/Esri/esri-loader) allows an application to load [Dojo AMD Modules](https://dojotoolkit.org/documentation/tutorials/1.10/modules/index.html) outside of the [Dojo Toolkit](https://dojotoolkit.org/). A module can be [lazy loaded](https://github.com/Esri/esri-loader#lazy-loading-the-arcgis-api-for-javascript), improving the initial load performance of the application by waiting to fetch API resources until they are actually needed:
+
+```typescript
+async initDefaultMap(): Promise<void> {
+  // loadModules() will make HTTP requests to arcgis.com to fetch specified modules
+  const [Map, MapView] = await loadModules(['esri/Map', 'esri/views/MapView']);
+
+  const map = new Map({
+    basemap: 'streets',
+  });
+
+  this.mapView = new MapView({
+    map: map,
+    center: [-98.58, 39.83],
+    zoom: 5,
+  });
+}
+```
+
+However, this can make unit testing difficult as the system under test does not have any reference to the objects in an API module until an HTTP request is made to fetch it. A test for the `initDefaultMap()` method will call `loadModules()` and make HTTP requests to arcgis.com to fetch the API modules needed. This may not be desireable for a few reasons:
+
+- The test becomes more like an integration test; we want to assert the `component.mapView` was set inside `loadModules()`, not test that the application could connect to the internet.
+
+- Tests could be executed in an environment like an automated build pipeline which may not have access to the ArcGIS CDN.
+
+- A test to ensure error responses from the request to load an ArcGIS module (the unhappy path) are handled properly may be necessary.
+
+```typescript
+it('should initialize a default map', async () => {
+  await component.initDefaultMap(); // test will make actual HTTP requests!
+
+  expect(component.mapView).not.toBeUndefined();
+});
+```
+
+### My solution
+
+Difficult to mock code is difficult to test! By refactoring the application code to leverage the [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) and [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) the tight coupling between the above `initDefaultMap()` method and the [esri-loader](https://github.com/Esri/esri-loader) can be eliminated. The [Facade Pattern](https://en.wikipedia.org/wiki/Facade_pattern) can be used, creating a wrapper class for the `loadModules()` method in the [esri-loader](https://github.com/Esri/esri-loader) which can then be injected into the class that has a dependency on ArcGIS API modules. The wrapper class exposes its own `loadModules()` method which can be easily mocked, eliminating HTTP requests to the ArcGIS CDN in a test suite. A library such as [TypeMoq](https://github.com/florinn/typemoq) can be used to create mock instances of the various ArcGIS API modules.
