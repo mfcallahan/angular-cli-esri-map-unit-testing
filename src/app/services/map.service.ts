@@ -1,4 +1,4 @@
-import { ElementRef, Injectable, Type } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import esri = __esri; // Esri types
 
@@ -12,6 +12,8 @@ export class MapService {
 
   constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
 
+  // Initialize a default Map object for the app, which is rendered with a MapView that is bound to the
+  // DOM element inside parameter 'mapElementRef'
   async initDefaultMap(
     basemap: string,
     centerLon: number,

@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     // Load the ArcGIS JS API styles on app init, inserting the stylesheet link above the first <style> tag on
-    // the page so that ArcGIS styles can be overridden, if needed. See:
+    // the page so that ArcGIS styles can be overridden, if needed. See this link for more information:
     // https://github.com/Esri/esri-loader#overriding-arcgis-styles
     this.esriLoaderWrapperService.loadCss(
       this.environment.baseConfigs.arcgisJsApiSettings.cssUrl,
