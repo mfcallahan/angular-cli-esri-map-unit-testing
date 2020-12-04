@@ -1,5 +1,8 @@
+import { HttpParams } from '@angular/common/http';
 import { ElementRef, Injectable } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
+import { EnvironmentService } from './environment.service';
+import { HttpService } from './http.service';
 import esri = __esri; // Esri types
 
 // This class encapsulates the Esri MapView and methods to manipulate the map. It is a singleton service, provided in
@@ -10,11 +13,11 @@ import esri = __esri; // Esri types
 export class MapService {
   mapView?: esri.MapView;
 
-  constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
+  constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService, readonly environment: EnvironmentService) {}
 
   // Initialize a default Map object for the app, which is rendered with a MapView that is bound to the
   // DOM element inside parameter 'mapElementRef'
-  async initDefaultMap(
+  public async initDefaultMap(
     basemap: string,
     centerLon: number,
     centerLat: number,
@@ -46,4 +49,8 @@ export class MapService {
 
     this.mapView?.ui.add(toggle, 'top-left');
   }
+
+  public async addPointsToMap(json: object): Promise<void> {}
+
+  public zoomToLayer(): void {}
 }

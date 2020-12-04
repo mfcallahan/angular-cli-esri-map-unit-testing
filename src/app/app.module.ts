@@ -6,10 +6,11 @@ import { MaterialModule } from './material.module';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent, MapComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, MaterialModule],
+  imports: [BrowserModule, BrowserAnimationsModule, HttpClientModule, FlexLayoutModule, MaterialModule],
   providers: [],
   bootstrap: [AppComponent],
 })
