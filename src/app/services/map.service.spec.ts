@@ -30,28 +30,20 @@ describe('MapService', () => {
 
   it('should initialize a default map', async () => {
     // Arrange
+    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+    const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
+    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+    mockMapView.setup((mock) => mock.ui).returns(() => mockDefaultUi.object);
     const mockBasemapToggle = TypeMoq.Mock.ofType<esri.BasemapToggle>();
 
-    const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
-    mockDefaultUi
-      .setup((m) => m.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()))
-      .returns((): void => {
-        return;
-      });
-
-    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
-    mockMapView.setup((m) => m.ui).returns(() => mockDefaultUi.object);
-
-    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+    const esriMockTypes = [mockMap, mockMapView, mockBasemapToggle];
 
     const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
-      Promise.resolve([mockMap, mockMapView, mockBasemapToggle])
+      Promise.resolve(esriMockTypes)
     );
 
-    spyOn(service.esriLoaderWrapperService, 'getInstance').and.returnValues(
-      mockMap.object,
-      mockMapView.object,
-      mockBasemapToggle.object
+    const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance').and.returnValues(
+      ...esriMockTypes.map((mock) => mock.object)
     );
 
     const basemap = 'streets';
@@ -64,8 +56,10 @@ describe('MapService', () => {
     await service.initDefaultMap(basemap, centerLon, centerLat, zoom, elementRef);
 
     // Assert
-    expect(loadModulesSpy).toHaveBeenCalled();
+    expect(loadModulesSpy).toHaveBeenCalledTimes(1);
+    expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
     expect(service.mapView).not.toBeUndefined();
-    mockDefaultUi.verify((m) => m.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.atLeastOnce());
+    expect(service.mapView).toBe(mockMapView.object);
+    mockDefaultUi.verify((mock) => mock.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.once());
   });
 });

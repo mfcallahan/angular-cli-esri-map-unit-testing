@@ -7,19 +7,21 @@ An approach for unit testing an Angular CLI application which uses the [esri-loa
 The [esri-loader](https://github.com/Esri/esri-loader) allows an application to load [Dojo AMD Modules](https://dojotoolkit.org/documentation/tutorials/1.10/modules/index.html) outside of the [Dojo Toolkit](https://dojotoolkit.org/). A module can be [lazy loaded](https://github.com/Esri/esri-loader#lazy-loading-the-arcgis-api-for-javascript), improving the initial load performance of the application by waiting to fetch API resources until they are actually needed:
 
 ```typescript
-async initDefaultMap(): Promise<void> {
-  // loadModules() will make HTTP requests to arcgis.com to fetch specified modules
-  const [Map, MapView] = await loadModules(['esri/Map', 'esri/views/MapView']);
+// MapService class to encapsulate ArcGIS API
+@Injectable({ providedIn: 'root' })
+export class MapService {
+  mapView?: esri.MapView;
 
-  const map = new Map({
-    basemap: 'streets',
-  });
+  async initDefaultMap(): Promise<void> {
+    // loadModules() will make HTTP requests to arcgis.com to fetch specified modules
+    const [Map, MapView] = await loadModules(['esri/Map', 'esri/views/MapView']);
 
-  this.mapView = new MapView({
-    map: map,
-    center: [-98.58, 39.83],
-    zoom: 5,
-  });
+    this.mapView = new MapView({
+      map: new Map({ basemap: 'streets' }),
+      center: [-112.077, 39.83],
+      zoom: 5,
+    });
+  }
 }
 ```
 
@@ -32,10 +34,11 @@ However, this can make unit testing difficult, as the system under test does not
 - Tests to ensure error responses from the request to load an ArcGIS API module (the unhappy path) are handled properly may be necessary.
 
 ```typescript
+// initDefaultMap() unit test
 it('should initialize a default map', async () => {
-  await component.initDefaultMap(); // test will make actual HTTP requests!
+  await service.initDefaultMap(); // test will make actual HTTP requests!
 
-  expect(component.mapView).not.toBeUndefined();
+  expect(service.mapView).not.toBeUndefined();
 });
 ```
 
@@ -45,9 +48,6 @@ Difficult to mock code is difficult to test! By refactoring the application code
 
 ```typescript
 // Singleton service wrapper class for esri-loader
-import { Injectable } from '@angular/core';
-import { loadModules } from 'esri-loader';
-
 @Injectable({ providedIn: 'root' })
 export class EsriLoaderWrapperService {
   constructor() {}
@@ -55,26 +55,55 @@ export class EsriLoaderWrapperService {
   public async loadModules(modules: string[]): Promise<any[]> {
     return await loadModules(modules);
   }
+
+  public getInstance<T>(type: new (paramObj: any) => T, paramObj?: any): T {
+    return new type(paramObj);
+  }
 }
 
-// Test suite
-describe('MapService', () => {
-  // ...
+// Updated MapService class
+@Injectable({ providedIn: 'root' })
+export class MapService {
+  mapView?: esri.MapView;
 
-  it('should initialize a default map', async () => {
-    // Mocked instances of ArcGIS API modules
-    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
-    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+  constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
 
-    // Mocked behavior of loadModules() method - HTTP requests will not be made
-    const loadModulesSpy = spyOn(component.esriLoaderWrapperService, 'loadModules').and.returnValue(
-      Promise.resolve([mockMap, mockMapView])
-    );
+  async initDefaultMap(): Promise<void> {
+    const [Map, MapView] = await this.esriLoaderWrapperService.loadModules(['esri/Map', 'esri/views/MapView']);
 
-    await component.initDefaultMap();
+    const map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { 'streets' });
 
-    expect(loadModulesSpy).toHaveBeenCalled();
-    expect(component.mapView).not.toBeUndefined();
-  });
+    this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
+      map,
+      center: [-112.077, 39.83],
+      zoom: 5,
+    });
+  }
+}
+
+// Updated initDefaultMap() unit test
+it('should initialize a default map', async () => {
+  // Arrange
+  const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+  const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+
+  const esriMockTypes = [mockMap, mockMapView];
+
+  const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
+    Promise.resolve(esriMockTypes)
+  );
+
+  const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance').and.returnValues(
+    ...esriMockTypes.map((mock) => mock.object)
+  );
+
+  // Act
+  await service.initDefaultMap(basemap, centerLon, centerLat, zoom, elementRef);
+
+  // Assert
+  expect(loadModulesSpy).toHaveBeenCalledTimes(1);
+  expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
+  expect(service.mapView).not.toBeUndefined();
+  expect(service.mapView).toBe(mockMapView.object);
 });
 ```
