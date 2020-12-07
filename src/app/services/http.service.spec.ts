@@ -7,7 +7,7 @@ import { TestBase } from 'src/test/testBase';
 import { HttpService } from './http.service';
 import { EnvironmentService } from './environment.service';
 
-describe('HttpService', () => {
+fdescribe('HttpService', () => {
   let service: HttpService;
   const mockEnvironment = TestBase.getMockEnvironment();
 
@@ -28,6 +28,7 @@ describe('HttpService', () => {
     [HttpTestingController, HttpService],
     (httpMock: HttpTestingController, httpService: HttpService) => {
       const numPoints = 100;
+      const mockParams = new HttpParams().set('numPoints', numPoints.toString());
       const mockResponse: Array<IMapPoint> = [
         {
           location: 'Foo',
@@ -45,13 +46,13 @@ describe('HttpService', () => {
       });
 
       // Create a request using the mock HttpClient client, calling the mockUrl with mockParams and mockHeaders.
-      // const req = httpMock.expectOne([mockUrl, mockParams.toString()].join('?'));
+      const req = httpMock.expectOne([service.environment.randomPtsPhxUrl, mockParams.toString()].join('?'));
 
       // Expect the request made by the mock HttpClient client to be a GET request.
-      // expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('GET');
 
       // Set mockResponse to be returned by the request.
-      // req.flush(mockResponse);
+      req.flush(mockResponse);
     }
   ));
 });
