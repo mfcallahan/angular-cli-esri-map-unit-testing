@@ -11,6 +11,7 @@ import esri = __esri; // Esri types
   providedIn: 'root',
 })
 export class MapService {
+  map?: esri.Map;
   mapView?: esri.MapView;
 
   constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService, readonly environment: EnvironmentService) {}
@@ -30,10 +31,10 @@ export class MapService {
       'esri/widgets/BasemapToggle',
     ]);
 
-    const map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
+    this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
 
     this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
-      map,
+      map: this.map,
       center: [centerLon, centerLat],
       zoom,
       container: mapElementRef?.nativeElement,
@@ -50,7 +51,76 @@ export class MapService {
     this.mapView?.ui.add(toggle, 'top-left');
   }
 
-  public async addPointsToMap(json: object): Promise<void> {}
+  public async addPointsToMap(json: any[]): Promise<void> {
+    const [Graphic, FeatureLayer] = await this.esriLoaderWrapperService.loadModules([
+      'esri/Graphic',
+      'esri/layers/FeatureLayer',
+    ]);
 
-  public zoomToLayer(): void {}
+    const graphics = json.map((point, i) => {
+      return new Graphic({
+        attributes: {
+          ObjectId: i + 1,
+          location: point.location,
+        },
+        geometry: {
+          type: 'point',
+          longitude: point.lon,
+          latitude: point.lat,
+        },
+      });
+    });
+
+    const randomPointsLayer = new FeatureLayer({
+      source: graphics,
+      objectIdField: 'OBJECTID',
+      renderer: {
+        type: 'simple',
+        symbol: {
+          type: 'simple-marker',
+          color: '#ffff00',
+          size: '12px',
+          outline: {
+            color: '#0d0d0d',
+            width: 1.5,
+          },
+        },
+      },
+      popupTemplate: {
+        title: 'Random sample point',
+        content: [
+          {
+            type: 'fields',
+            fieldInfos: [
+              {
+                fieldName: 'location',
+                label: 'Location',
+                visible: true,
+              },
+              {
+                fieldName: 'latitude',
+                label: 'Latitude',
+                visible: true,
+              },
+              {
+                fieldName: 'longitude',
+                label: 'longitude',
+                visible: true,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    this.map?.layers.add(randomPointsLayer);
+
+    this.zoomToLayer(randomPointsLayer);
+  }
+
+  public async zoomToLayer(layer: esri.FeatureLayer): Promise<void> {
+    const extent = await layer.queryExtent();
+
+    this.mapView?.goTo(extent);
+  }
 }
