@@ -4,29 +4,29 @@ import { HttpParams } from '@angular/common/http';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 import { TestBase } from 'src/test/testBase';
 
-import { HttpService } from './http.service';
+import { ApiService } from './api.service';
 import { EnvironmentService } from './environment.service';
 
-fdescribe('HttpService', () => {
-  let service: HttpService;
+describe('ApiService', () => {
+  let service: ApiService;
   const mockEnvironment = TestBase.getMockEnvironment();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: EnvironmentService, useValue: mockEnvironment }, HttpService],
+      providers: [{ provide: EnvironmentService, useValue: mockEnvironment }, ApiService],
       imports: [HttpClientTestingModule],
     });
-    service = TestBed.inject(HttpService);
+    service = TestBed.inject(ApiService);
   });
 
-  it('should create HttpService', () => {
+  it('should create ApiService', () => {
     expect(service).toBeTruthy();
   });
 
   it('should execute GET request to randomPtsPhxUrl', inject(
     // Inject HttpTestingController to create a mock httpClient instance.
-    [HttpTestingController, HttpService],
-    (httpMock: HttpTestingController, httpService: HttpService) => {
+    [HttpTestingController, ApiService],
+    (httpMock: HttpTestingController, apiService: ApiService) => {
       const numPoints = 100;
       const mockParams = new HttpParams().set('numPoints', numPoints.toString());
       const mockResponse: Array<IMapPoint> = [
@@ -41,7 +41,7 @@ fdescribe('HttpService', () => {
           lon: -112.1032,
         },
       ];
-      httpService.getRandomPointsInPhx(numPoints).subscribe((response) => {
+      apiService.getRandomPointsInPhx(numPoints).subscribe((response) => {
         expect(response).toBe(mockResponse);
       });
 

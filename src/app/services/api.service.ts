@@ -7,7 +7,7 @@ import { IMapPoint } from '../interfaces/iMapPoint';
 @Injectable({
   providedIn: 'root',
 })
-export class HttpService {
+export class ApiService {
   constructor(readonly environment: EnvironmentService, readonly httpClient: HttpClient) {}
 
   public getRandomPointsInPhx(numPoints: number): Observable<Array<IMapPoint>> {

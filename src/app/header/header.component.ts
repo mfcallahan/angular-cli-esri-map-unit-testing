@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
-import { HttpService } from 'src/app/services/http.service';
+import { ApiService } from 'src/app/services/api.service';
 import { MapService } from 'src/app/services/map.service';
 
 @Component({
@@ -11,13 +11,13 @@ import { MapService } from 'src/app/services/map.service';
 export class HeaderComponent {
   showSpinner = false;
 
-  constructor(readonly httpService: HttpService, readonly mapService: MapService) {}
+  constructor(readonly apiService: ApiService, readonly mapService: MapService) {}
 
   public loadDataClick(): void {
     this.showSpinner = true;
     const numPointsToLoad = 100;
 
-    this.httpService.getRandomPointsInPhx(numPointsToLoad).subscribe(async (response: Array<IMapPoint>) => {
+    this.apiService.getRandomPointsInPhx(numPointsToLoad).subscribe(async (response: Array<IMapPoint>) => {
       await this.mapService.addPointsToMap(response);
       this.showSpinner = false;
     });
