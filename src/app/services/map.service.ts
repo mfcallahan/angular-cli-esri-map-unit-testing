@@ -1,8 +1,7 @@
-import { HttpParams } from '@angular/common/http';
 import { ElementRef, Injectable } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import { EnvironmentService } from './environment.service';
-import { HttpService } from './http.service';
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 import esri = __esri; // Esri types
 
 // This class encapsulates the Esri MapView and methods to manipulate the map. It is a singleton service, provided in
@@ -51,13 +50,15 @@ export class MapService {
     this.mapView?.ui.add(toggle, 'top-left');
   }
 
-  public async addPointsToMap(json: any[]): Promise<void> {
+  public clearAllLayers(): void {}
+
+  public async addPointsToMap(mapPoints: Array<IMapPoint>): Promise<void> {
     const [Graphic, FeatureLayer] = await this.esriLoaderWrapperService.loadModules([
       'esri/Graphic',
       'esri/layers/FeatureLayer',
     ]);
 
-    const graphics = json.map((point, i) => {
+    const graphics = mapPoints.map((point, i) => {
       return new Graphic({
         attributes: {
           ObjectId: i + 1,
@@ -87,7 +88,7 @@ export class MapService {
         },
       },
       popupTemplate: {
-        title: 'Random sample point',
+        title: 'Map points',
         content: [
           {
             type: 'fields',
@@ -115,12 +116,10 @@ export class MapService {
 
     this.map?.layers.add(randomPointsLayer);
 
-    this.zoomToLayer(randomPointsLayer);
+    await this.zoomToLayer(randomPointsLayer);
   }
 
   public async zoomToLayer(layer: esri.FeatureLayer): Promise<void> {
-    const extent = await layer.queryExtent();
-
-    this.mapView?.goTo(extent);
+    this.mapView?.goTo(await layer.queryExtent());
   }
 }

@@ -1,4 +1,6 @@
-export class MapPoint {
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
+
+export class MapPoint implements IMapPoint {
   location: string;
   lat: number;
   lon: number;

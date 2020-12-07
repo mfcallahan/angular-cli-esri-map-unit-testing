@@ -1,16 +1,19 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
+import { TestBase } from 'src/test/testBase';
 
 import { HttpService } from './http.service';
+import { EnvironmentService } from './environment.service';
 
 describe('HttpService', () => {
-  const mockUrl = 'https://foo.bar/baz';
   let service: HttpService;
+  const mockEnvironment = TestBase.getMockEnvironment();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [HttpService],
+      providers: [{ provide: EnvironmentService, useValue: mockEnvironment }, HttpService],
       imports: [HttpClientTestingModule],
     });
     service = TestBed.inject(HttpService);
@@ -20,39 +23,35 @@ describe('HttpService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should execute GET request', inject(
+  it('should execute GET request to randomPtsPhxUrl', inject(
     // Inject HttpTestingController to create a mock httpClient instance.
     [HttpTestingController, HttpService],
     (httpMock: HttpTestingController, httpService: HttpService) => {
-      const mockParams = new HttpParams().set('foo', 'bar').set('baz', 'qux');
-      const mockHeaders = new HttpHeaders().set('x-foo-bar', 'xyzzy');
-      const mockResponse = {
-        foo: 'bar',
-        baz: 100,
-        qux: [
-          {
-            blah: 1,
-            corge: 'zjZ16',
-          },
-          {
-            blah: 2,
-            corge: 'AXVcw',
-          },
-        ],
-      };
-
-      httpService.get(mockUrl, mockParams, mockHeaders).subscribe((response) => {
+      const numPoints = 100;
+      const mockResponse: Array<IMapPoint> = [
+        {
+          location: 'Foo',
+          lat: 33.1995,
+          lon: -112.261,
+        },
+        {
+          location: 'Bar',
+          lat: 33.6495,
+          lon: -112.1032,
+        },
+      ];
+      httpService.getRandomPointsInPhx(numPoints).subscribe((response) => {
         expect(response).toBe(mockResponse);
       });
 
       // Create a request using the mock HttpClient client, calling the mockUrl with mockParams and mockHeaders.
-      const req = httpMock.expectOne([mockUrl, mockParams.toString()].join('?'));
+      // const req = httpMock.expectOne([mockUrl, mockParams.toString()].join('?'));
 
       // Expect the request made by the mock HttpClient client to be a GET request.
-      expect(req.request.method).toEqual('GET');
+      // expect(req.request.method).toEqual('GET');
 
       // Set mockResponse to be returned by the request.
-      req.flush(mockResponse);
+      // req.flush(mockResponse);
     }
   ));
 });
