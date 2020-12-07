@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 import { HttpService } from 'src/app/services/http.service';
 import { MapService } from 'src/app/services/map.service';
 
@@ -16,7 +17,7 @@ export class HeaderComponent {
     this.showSpinner = true;
     const numPointsToLoad = 100;
 
-    this.httpService.getRandomPointsInPhx(numPointsToLoad).subscribe(async (response: any) => {
+    this.httpService.getRandomPointsInPhx(numPointsToLoad).subscribe(async (response: Array<IMapPoint>) => {
       await this.mapService.addPointsToMap(response);
       this.showSpinner = false;
     });
