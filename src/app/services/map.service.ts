@@ -16,18 +16,19 @@ export class MapService {
   constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService, readonly environment: EnvironmentService) {}
 
   // Initialize a default Map object for the app, which is rendered with a MapView that is bound to the
-  // DOM element inside parameter 'mapElementRef'
+  // DOM element inside parameter 'mapElementRef' and contains basemap toggle and zoom widgets.
   public async initDefaultMap(
     basemap: string,
     centerLon: number,
     centerLat: number,
-    zoom: number,
+    zoomLevel: number,
     mapElementRef?: ElementRef
   ): Promise<void> {
-    const [Map, MapView, BasemapToggle] = await this.esriLoaderWrapperService.loadModules([
+    const [Map, MapView, BasemapToggle, Zoom] = await this.esriLoaderWrapperService.loadModules([
       'esri/Map',
       'esri/views/MapView',
       'esri/widgets/BasemapToggle',
+      'esri/widgets/Zoom',
     ]);
 
     this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
@@ -35,7 +36,7 @@ export class MapService {
     this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
       map: this.map,
       center: [centerLon, centerLat],
-      zoom,
+      zoom: zoomLevel,
       container: mapElementRef?.nativeElement,
       ui: {
         components: ['attribution'],
@@ -47,7 +48,12 @@ export class MapService {
       nextBasemap: 'hybrid',
     });
 
+    const zoom = this.esriLoaderWrapperService.getInstance<esri.Zoom>(Zoom, {
+      view: this.mapView,
+    });
+
     this.mapView?.ui.add(toggle, 'top-left');
+    this.mapView?.ui.add(zoom, 'top-right');
   }
 
   public clearAllLayers(): void {}

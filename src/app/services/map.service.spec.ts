@@ -35,8 +35,9 @@ describe('MapService', () => {
     const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
     mockMapView.setup((mock) => mock.ui).returns(() => mockDefaultUi.object);
     const mockBasemapToggle = TypeMoq.Mock.ofType<esri.BasemapToggle>();
+    const mockZoom = TypeMoq.Mock.ofType<esri.Zoom>();
 
-    const esriMockTypes = [mockMap, mockMapView, mockBasemapToggle];
+    const esriMockTypes = [mockMap, mockMapView, mockBasemapToggle, mockZoom];
 
     const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
       Promise.resolve(esriMockTypes)
@@ -49,17 +50,17 @@ describe('MapService', () => {
     const basemap = 'streets';
     const centerLon = -112.077;
     const centerLat = 33.491;
-    const zoom = 10;
+    const zoomLevel = 10;
     const elementRef = new ElementRef(null);
 
     // Act
-    await service.initDefaultMap(basemap, centerLon, centerLat, zoom, elementRef);
+    await service.initDefaultMap(basemap, centerLon, centerLat, zoomLevel, elementRef);
 
     // Assert
     expect(loadModulesSpy).toHaveBeenCalledTimes(1);
     expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
     expect(service.mapView).not.toBeUndefined();
     expect(service.mapView).toBe(mockMapView.object);
-    mockDefaultUi.verify((mock) => mock.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.once());
+    mockDefaultUi.verify((mock) => mock.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(2));
   });
 });
