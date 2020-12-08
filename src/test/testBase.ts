@@ -1,5 +1,6 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { IEnvironment } from 'src/app/interfaces/iEnvironment';
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 
 export class TestBase {
   // Call this in a test spec's afterEach() method to a remove rendered component from the test runner page.
@@ -18,5 +19,20 @@ export class TestBase {
       baseConfigs: {},
       randomPtsPhxUrl: 'https://url.to/RandomPointsPhx',
     };
+  }
+
+  static getIMapPointArray(): Array<IMapPoint> {
+    return [
+      {
+        location: 'Foo',
+        lat: 33.1995,
+        lon: -112.261,
+      },
+      {
+        location: 'Bar',
+        lat: 33.6495,
+        lon: -112.1032,
+      },
+    ];
   }
 }

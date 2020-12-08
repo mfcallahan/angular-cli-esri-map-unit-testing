@@ -29,18 +29,7 @@ describe('ApiService', () => {
     (httpMock: HttpTestingController, apiService: ApiService) => {
       const numPoints = 100;
       const mockParams = new HttpParams().set('numPoints', numPoints.toString());
-      const mockResponse: Array<IMapPoint> = [
-        {
-          location: 'Foo',
-          lat: 33.1995,
-          lon: -112.261,
-        },
-        {
-          location: 'Bar',
-          lat: 33.6495,
-          lon: -112.1032,
-        },
-      ];
+      const mockResponse: Array<IMapPoint> = TestBase.getIMapPointArray();
       apiService.getRandomPointsInPhx(numPoints).subscribe((response) => {
         expect(response).toBe(mockResponse);
       });
