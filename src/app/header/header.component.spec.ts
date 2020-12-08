@@ -6,7 +6,7 @@ import { IMapPoint } from '../interfaces/iMapPoint';
 
 import { HeaderComponent } from './header.component';
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
 
@@ -27,7 +27,7 @@ fdescribe('HeaderComponent', () => {
     TestBase.testTearDown(fixture);
   });
 
-  it('should create HeaderComponent', () => {
+  it('should be instantiated', () => {
     expect(component).toBeTruthy();
   });
 

@@ -3,12 +3,12 @@ import { TestBase } from 'src/test/testBase';
 import { MapService } from 'src/app/services/map.service';
 
 import { MapComponent } from './map.component';
-import { AppComponent } from '../app.component';
 
 describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let initDefaultMapSpy: jasmine.Spy;
+  let addAllMapWidgetsSpy: jasmine.Spy;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -21,6 +21,7 @@ describe('MapComponent', () => {
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
     initDefaultMapSpy = spyOn(component.mapService, 'initDefaultMap').and.returnValue(Promise.resolve());
+    addAllMapWidgetsSpy = spyOn(component.mapService, 'addAllMapWidgets');
     fixture.detectChanges();
   });
 
@@ -28,7 +29,7 @@ describe('MapComponent', () => {
     TestBase.testTearDown(fixture);
   });
 
-  it('should initialize MapComponent', () => {
+  it('should be instantiated', () => {
     expect(component).toBeTruthy();
     expect(initDefaultMapSpy).toHaveBeenCalledOnceWith(
       component.defaultBaseMap,
@@ -37,5 +38,6 @@ describe('MapComponent', () => {
       component.defaultZoom,
       component.mapElementRef
     );
+    // expect(addAllMapWidgetsSpy).toHaveBeenCalled();
   });
 });

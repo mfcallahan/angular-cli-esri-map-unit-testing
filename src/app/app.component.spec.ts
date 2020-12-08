@@ -29,7 +29,7 @@ describe('AppComponent', () => {
     TestBase.testTearDown(fixture);
   });
 
-  it('should create AppComponent', () => {
+  it('should be instantiated', () => {
     expect(fixture.componentInstance).toBeTruthy();
     expect(loadCssSpy).toHaveBeenCalledOnceWith(
       component.environment.baseConfigs.arcgisJsApiSettings.cssUrl,
