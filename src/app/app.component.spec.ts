@@ -3,7 +3,7 @@ import { EnvironmentService } from './services/environment.service';
 import { TestBase } from 'src/test/testBase';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
-import { MapComponent } from './map/map.component';
+import { MapComponent } from 'src/app/components/map/map.component';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -29,7 +29,7 @@ describe('AppComponent', () => {
     TestBase.testTearDown(fixture);
   });
 
-  it('should create AppComponent', () => {
+  it('should be instantiated', () => {
     expect(fixture.componentInstance).toBeTruthy();
     expect(loadCssSpy).toHaveBeenCalledOnceWith(
       component.environment.baseConfigs.arcgisJsApiSettings.cssUrl,

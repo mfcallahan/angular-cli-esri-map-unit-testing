@@ -6,11 +6,15 @@ import { IEnvironment } from 'src/app/interfaces/iEnvironment';
   providedIn: 'root',
 })
 export class EnvironmentService implements IEnvironment {
-  get production(): any {
+  get production(): boolean {
     return environment.production;
   }
 
   get baseConfigs(): any {
     return environment.baseConfigs;
+  }
+
+  get randomPtsPhxUrl(): string {
+    return environment.randomPtsPhxUrl;
   }
 }

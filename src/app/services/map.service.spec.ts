@@ -2,19 +2,24 @@ import esri = __esri;
 import * as TypeMoq from 'typemoq';
 import { ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestBase } from 'src/test/testBase';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import { EnvironmentService } from './environment.service';
-
 import { MapService } from './map.service';
 
 describe('MapService', () => {
   let service: MapService;
   const environment = new EnvironmentService();
   const esriLoaderWrapperService = new EsriLoaderWrapperService(environment);
+  const mockEnvironment = TestBase.getMockEnvironment();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: EnvironmentService,
+          useValue: mockEnvironment,
+        },
         {
           provide: EsriLoaderWrapperService,
           useValue: esriLoaderWrapperService,
@@ -24,42 +29,121 @@ describe('MapService', () => {
     service = TestBed.inject(MapService);
   });
 
-  it('should created MapService', () => {
+  it('should be instantiated', () => {
     expect(service).toBeTruthy();
   });
 
   it('should initialize a default map', async () => {
-    // Arrange
+    // initDefaultMap() parameter value
+    const elementRef = new ElementRef(null);
+
+    // Create mock types of the ArcGIS API modules that initDefaultMap() will load.
     const mockMap = TypeMoq.Mock.ofType<esri.Map>();
-    const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
     const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
-    mockMapView.setup((mock) => mock.ui).returns(() => mockDefaultUi.object);
-    const mockBasemapToggle = TypeMoq.Mock.ofType<esri.BasemapToggle>();
 
-    const esriMockTypes = [mockMap, mockMapView, mockBasemapToggle];
+    const esriMockTypes = [mockMap, mockMapView];
 
+    // Spy on the EsriLoaderWrapperService.loadModules() method and mock its return value to be an array of the mocked ArcGIS API modules.
     const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
       Promise.resolve(esriMockTypes)
     );
 
-    const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance').and.returnValues(
-      ...esriMockTypes.map((mock) => mock.object)
-    );
+    // Spy on the EsriLoaderWrapperService.getInstance() method, returning the correct instances of the mocked ArcGIS API modules
+    // according to the arguments passed in.
+    const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
+      .withArgs(
+        jasmine.objectContaining(mockMap),
+        jasmine.objectContaining({ basemap: mockEnvironment.baseConfigs.defaultMapSettings.basemapId })
+      )
+      .and.returnValue(mockMap.object)
+      .withArgs(
+        jasmine.objectContaining(mockMapView),
+        jasmine.objectContaining({
+          map: mockMap.object,
+          center: [
+            mockEnvironment.baseConfigs.defaultMapSettings.centerLon,
+            mockEnvironment.baseConfigs.defaultMapSettings.centerLat,
+          ],
+          zoom: mockEnvironment.baseConfigs.defaultMapSettings.zoomLevel,
+          container: elementRef?.nativeElement,
+        })
+      )
+      .and.returnValue(mockMapView.object);
 
-    const basemap = 'streets';
-    const centerLon = -112.077;
-    const centerLat = 33.491;
-    const zoom = 10;
-    const elementRef = new ElementRef(null);
+    // Call the method under test.
+    await service.initDefaultMap(elementRef);
 
-    // Act
-    await service.initDefaultMap(basemap, centerLon, centerLat, zoom, elementRef);
-
-    // Assert
+    // Assert the Spy objects were called.
     expect(loadModulesSpy).toHaveBeenCalledTimes(1);
     expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
-    expect(service.mapView).not.toBeUndefined();
+
+    // Assert class properties were set with the expected values.
+    expect(service.map).toBe(mockMap.object);
     expect(service.mapView).toBe(mockMapView.object);
-    mockDefaultUi.verify((mock) => mock.add(TypeMoq.It.isAny(), TypeMoq.It.isAnyString()), TypeMoq.Times.once());
+  });
+
+  it('should add widgets to MapView', async () => {
+    // Create mock types of the ArcGIS API modules that initDefaultMap() will load.
+    const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
+    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+    // Set up the 'ui' property of mockMapView to return an instance of the mockDefaultUi.
+    mockMapView.setup((mock) => mock.ui).returns(() => mockDefaultUi.object);
+
+    const mockBasemapToggle = TypeMoq.Mock.ofType<esri.BasemapToggle>();
+    const mockZoom = TypeMoq.Mock.ofType<esri.Zoom>();
+
+    service.mapView = mockMapView.object;
+
+    const esriMockTypes = [mockBasemapToggle, mockZoom];
+
+    // Spy on the EsriLoaderWrapperService.loadModules() method and mock its return value to be an array of the mocked ArcGIS API modules.
+    const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
+      Promise.resolve(esriMockTypes)
+    );
+
+    // Spy on the EsriLoaderWrapperService.getInstance() method, returning the correct instances of the mocked ArcGIS API modules
+    // according to the arguments passed in.
+    const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
+      .withArgs(
+        jasmine.objectContaining(mockBasemapToggle),
+        jasmine.objectContaining({
+          view: service.mapView,
+          nextBasemap: mockEnvironment.baseConfigs.defaultMapSettings.widgets.basemapToggle.nextBasemap,
+        })
+      )
+      .and.returnValue(mockBasemapToggle.object)
+      .withArgs(
+        jasmine.objectContaining(mockZoom),
+        jasmine.objectContaining({
+          view: service.mapView,
+        })
+      )
+      .and.returnValue(mockMapView.object);
+
+    // Call the method under test.
+    await service.addAllMapWidgets();
+
+    // Assert the Spy objects were called.
+    expect(loadModulesSpy).toHaveBeenCalledTimes(1);
+    expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
+
+    // Assert the widgets were added to MapService.mapView.ui
+    mockDefaultUi.verify(
+      (mock) =>
+        mock.add(
+          TypeMoq.It.isAny(),
+          TypeMoq.It.isValue(mockEnvironment.baseConfigs.defaultMapSettings.widgets.basemapToggle.position)
+        ),
+      TypeMoq.Times.exactly(1)
+    );
+
+    mockDefaultUi.verify(
+      (mock) =>
+        mock.add(
+          TypeMoq.It.isAny(),
+          TypeMoq.It.isValue(mockEnvironment.baseConfigs.defaultMapSettings.widgets.zoom.position)
+        ),
+      TypeMoq.Times.exactly(1)
+    );
   });
 });
