@@ -4,11 +4,9 @@ import { MapService } from 'src/app/services/map.service';
 import { EnvironmentService } from 'src/app/services/environment.service';
 import { MapComponent } from './map.component';
 
-fdescribe('MapComponent', () => {
+describe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
-  let initDefaultMapSpy: jasmine.Spy;
-  let addAllMapWidgetsSpy: jasmine.Spy;
   const mockEnvironment = TestBase.getMockEnvironment();
 
   beforeEach(async () => {
@@ -21,9 +19,6 @@ fdescribe('MapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
-    initDefaultMapSpy = spyOn(component.mapService, 'initDefaultMap').and.returnValue(Promise.resolve());
-    addAllMapWidgetsSpy = spyOn(component.mapService, 'addAllMapWidgets');
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -32,7 +27,15 @@ fdescribe('MapComponent', () => {
 
   it('should be instantiated', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should set up map after component view initialization', async () => {
+    const initDefaultMapSpy = spyOn(component.mapService, 'initDefaultMap').and.returnValue(Promise.resolve());
+    const addAllMapWidgetsSpy = spyOn(component.mapService, 'addAllMapWidgets').and.returnValue(Promise.resolve());
+
+    await component.ngAfterViewInit();
+
     expect(initDefaultMapSpy).toHaveBeenCalledOnceWith(component.mapElementRef);
-    expect(addAllMapWidgetsSpy).toHaveBeenCalled();
+    expect(addAllMapWidgetsSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -25,8 +25,13 @@ export class TestBase {
           zoomLevel: 10,
           basemapId: BasemapId.streetsNightVector,
           widgets: {
-            basemapTogglePosition: WidgetPosition.bottomRight,
-            zoomPosition: WidgetPosition.topLeft,
+            basemapToggle: {
+              position: WidgetPosition.bottomRight,
+              nextBasemap: BasemapId.terrain,
+            },
+            zoom: {
+              position: WidgetPosition.topLeft,
+            },
           },
         },
       },

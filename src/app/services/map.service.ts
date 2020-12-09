@@ -48,15 +48,15 @@ export class MapService {
 
     const toggle = this.esriLoaderWrapperService.getInstance<esri.BasemapToggle>(BasemapToggle, {
       view: this.mapView,
-      nextBasemap: BasemapId.hybrid,
+      nextBasemap: this.environment.baseConfigs.defaultMapSettings.widgets.basemapToggle.nextBasemap,
     });
 
     const zoom = this.esriLoaderWrapperService.getInstance<esri.Zoom>(Zoom, {
       view: this.mapView,
     });
 
-    this.mapView?.ui.add(toggle, this.environment.baseConfigs.defaultMapSettings.widgets.basemapTogglePosition);
-    this.mapView?.ui.add(zoom, this.environment.baseConfigs.defaultMapSettings.widgets.zoomPosition);
+    this.mapView?.ui.add(toggle, this.environment.baseConfigs.defaultMapSettings.widgets.basemapToggle.position);
+    this.mapView?.ui.add(zoom, this.environment.baseConfigs.defaultMapSettings.widgets.zoom.position);
   }
 
   public removeAllPoints(zoomToDefaultExtent: boolean): void {

@@ -14,8 +14,13 @@ export const baseConfigs = {
     zoomLevel: 5,
     basemapId: BasemapId.streets,
     widgets: {
-      basemapTogglePosition: WidgetPosition.topLeft,
-      zoomPosition: WidgetPosition.topRight,
+      basemapToggle: {
+        position: WidgetPosition.topLeft,
+        nextBasemap: BasemapId.hybrid,
+      },
+      zoom: {
+        position: WidgetPosition.topRight,
+      },
     },
   },
 };
