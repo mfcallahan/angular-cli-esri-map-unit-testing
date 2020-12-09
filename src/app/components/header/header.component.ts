@@ -14,7 +14,7 @@ export class HeaderComponent {
 
   constructor(readonly apiService: ApiService, readonly mapService: MapService) {}
 
-  public loadDataClick(): void {
+  public async loadDataClick(): Promise<void> {
     this.showSpinner = true;
     const numPointsToLoad = 100;
 
@@ -22,15 +22,16 @@ export class HeaderComponent {
       this.mapService.removeAllPoints(false);
     }
 
-    this.apiService.getRandomPointsInPhx(numPointsToLoad).subscribe(async (response: Array<IMapPoint>) => {
-      await this.mapService.addPointsToMap(response);
-      this.showSpinner = false;
-      this.dataLoaded = true;
-    });
+    const response: Array<IMapPoint> = await this.apiService.getRandomPointsInPhx(numPointsToLoad).toPromise();
+
+    await this.mapService.addPointsToMap(response);
+
+    this.showSpinner = false;
+    this.dataLoaded = true;
   }
 
-  public async clearDataClick(): Promise<void> {
-    await this.mapService.removeAllPoints(true);
+  public clearDataClick(): void {
+    this.mapService.removeAllPoints(true);
     this.dataLoaded = false;
   }
 }

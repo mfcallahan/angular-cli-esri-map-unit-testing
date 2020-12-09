@@ -3,9 +3,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { HttpParams } from '@angular/common/http';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 import { TestBase } from 'src/test/testBase';
-
+import { EnvironmentService } from 'src/app/services/environment.service';
 import { ApiService } from './api.service';
-import { EnvironmentService } from './environment.service';
 
 describe('ApiService', () => {
   let service: ApiService;

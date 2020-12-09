@@ -119,3 +119,5 @@ it('should initialize a default map', async () => {
   expect(service.mapView).toBe(mockMapView.object);
 });
 ```
+
+This repository contains a working Angular application which loads several different ArcGIS API for JavaScript modules. I have made an attempt to write clean, testable code, and provide maximum unit test coverage using the patterns and practices I outlined above. Feel free to browse or clone the repository, and use this to assist with unit testing your own Angular + ArcGIS applications. Any feedback back is welcomed!

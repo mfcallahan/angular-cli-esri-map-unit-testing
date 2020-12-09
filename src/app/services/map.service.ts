@@ -2,7 +2,6 @@ import { ElementRef, Injectable } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import { EnvironmentService } from './environment.service';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
-import { WidgetPosition } from 'src/app/enums/widgetPosition';
 import { BasemapId } from 'src/app/enums/basemapId';
 import esri = __esri; // Esri types
 
@@ -12,36 +11,27 @@ import esri = __esri; // Esri types
   providedIn: 'root',
 })
 export class MapService {
-  defaultCenterLat?: number;
-  defaultCenterLon?: number;
-  defaultZoom?: number;
-  defaultBaseMap?: string;
   map?: esri.Map;
   mapView?: esri.MapView;
 
-  constructor(readonly esriLoaderWrapperService: EsriLoaderWrapperService, readonly environment: EnvironmentService) {}
+  constructor(readonly environment: EnvironmentService, readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
 
   // Initialize a default Map object for the app, which is rendered with a MapView that is bound to the DOM
   // element inside parameter 'mapElementRef'
-  public async initDefaultMap(
-    basemap: string,
-    centerLon: number,
-    centerLat: number,
-    zoomLevel: number,
-    mapElementRef?: ElementRef
-  ): Promise<void> {
-    this.defaultCenterLat = centerLat;
-    this.defaultCenterLon = centerLon;
-    this.defaultZoom = zoomLevel;
-
+  public async initDefaultMap(mapElementRef?: ElementRef): Promise<void> {
     const [Map, MapView] = await this.esriLoaderWrapperService.loadModules(['esri/Map', 'esri/views/MapView']);
 
-    this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
+    this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, {
+      basemap: this.environment.baseConfigs.defaultMapSettings.basemapId,
+    });
 
     this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
       map: this.map,
-      center: [centerLon, centerLat],
-      zoom: zoomLevel,
+      center: [
+        this.environment.baseConfigs.defaultMapSettings.centerLon,
+        this.environment.baseConfigs.defaultMapSettings.centerLat,
+      ],
+      zoom: this.environment.baseConfigs.defaultMapSettings.zoomLevel,
       container: mapElementRef?.nativeElement,
       ui: {
         components: ['attribution'],
@@ -50,11 +40,7 @@ export class MapService {
   }
 
   // Creates instances of widgets and add them to the MapView
-  public async addAllMapWidgets(
-    basemapToggleId: BasemapId,
-    basemapTogglePosition: WidgetPosition,
-    zoomPosition: WidgetPosition
-  ): Promise<void> {
+  public async addAllMapWidgets(): Promise<void> {
     const [BasemapToggle, Zoom] = await this.esriLoaderWrapperService.loadModules([
       'esri/widgets/BasemapToggle',
       'esri/widgets/Zoom',
@@ -62,15 +48,15 @@ export class MapService {
 
     const toggle = this.esriLoaderWrapperService.getInstance<esri.BasemapToggle>(BasemapToggle, {
       view: this.mapView,
-      nextBasemap: basemapToggleId.toString(),
+      nextBasemap: this.environment.baseConfigs.defaultMapSettings.widgets.basemapToggle.nextBasemap,
     });
 
     const zoom = this.esriLoaderWrapperService.getInstance<esri.Zoom>(Zoom, {
       view: this.mapView,
     });
 
-    this.mapView?.ui.add(toggle, basemapTogglePosition.toString());
-    this.mapView?.ui.add(zoom, zoomPosition.toString());
+    this.mapView?.ui.add(toggle, this.environment.baseConfigs.defaultMapSettings.widgets.basemapToggle.position);
+    this.mapView?.ui.add(zoom, this.environment.baseConfigs.defaultMapSettings.widgets.zoom.position);
   }
 
   public removeAllPoints(zoomToDefaultExtent: boolean): void {
@@ -78,8 +64,11 @@ export class MapService {
 
     if (zoomToDefaultExtent) {
       this.mapView?.goTo({
-        center: [this.defaultCenterLon, this.defaultCenterLat],
-        zoom: this.defaultZoom,
+        center: [
+          this.environment.baseConfigs.defaultMapSettings.centerLon,
+          this.environment.baseConfigs.defaultMapSettings.centerLat,
+        ],
+        zoom: this.environment.baseConfigs.defaultMapSettings.zoomLevel,
       });
     }
   }
