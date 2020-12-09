@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestBase } from 'src/test/testBase';
 import { MapService } from 'src/app/services/map.service';
+import { EnvironmentService } from 'src/app/services/environment.service';
 import { MapComponent } from './map.component';
 
-describe('MapComponent', () => {
+fdescribe('MapComponent', () => {
   let component: MapComponent;
   let fixture: ComponentFixture<MapComponent>;
   let initDefaultMapSpy: jasmine.Spy;
   let addAllMapWidgetsSpy: jasmine.Spy;
+  const mockEnvironment = TestBase.getMockEnvironment();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MapComponent],
-      providers: [MapService],
+      providers: [{ provide: EnvironmentService, useValue: mockEnvironment }, MapService],
     }).compileComponents();
   });
 
@@ -30,13 +32,7 @@ describe('MapComponent', () => {
 
   it('should be instantiated', () => {
     expect(component).toBeTruthy();
-    expect(initDefaultMapSpy).toHaveBeenCalledOnceWith(
-      component.defaultBaseMap,
-      component.defaultCenterLon,
-      component.defaultCenterLat,
-      component.defaultZoom,
-      component.mapElementRef
-    );
-    // expect(addAllMapWidgetsSpy).toHaveBeenCalled();
+    expect(initDefaultMapSpy).toHaveBeenCalledOnceWith(component.mapElementRef);
+    expect(addAllMapWidgetsSpy).toHaveBeenCalled();
   });
 });

@@ -1,3 +1,6 @@
+import { BasemapId } from 'src/app/enums/basemapId';
+import { WidgetPosition } from 'src/app/enums/widgetPosition';
+
 const arcgisVersion = '4.17';
 
 export const baseConfigs = {
@@ -5,9 +8,14 @@ export const baseConfigs = {
     apiUrl: `https://js.arcgis.com/${arcgisVersion}/`,
     cssUrl: `https://js.arcgis.com/${arcgisVersion}/esri/css/main.css`,
   },
-  mapSettings: {
-    defaultCenterLat: 39.83,
-    defaultCenterLon: -98.58,
-    defaultZoom: 5,
+  defaultMapSettings: {
+    centerLat: 39.83,
+    centerLon: -98.58,
+    zoomLevel: 5,
+    basemapId: BasemapId.streets,
+    widgets: {
+      basemapTogglePosition: WidgetPosition.topLeft,
+      zoomPosition: WidgetPosition.topRight,
+    },
   },
 };

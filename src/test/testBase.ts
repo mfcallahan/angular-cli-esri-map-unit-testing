@@ -1,4 +1,6 @@
 import { ComponentFixture } from '@angular/core/testing';
+import { BasemapId } from 'src/app/enums/basemapId';
+import { WidgetPosition } from 'src/app/enums/widgetPosition';
 import { IEnvironment } from 'src/app/interfaces/iEnvironment';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 
@@ -16,8 +18,19 @@ export class TestBase {
   static getMockEnvironment(): IEnvironment {
     return {
       production: false,
-      baseConfigs: {},
-      randomPtsPhxUrl: 'https://url.to/RandomPointsPhx',
+      baseConfigs: {
+        defaultMapSettings: {
+          centerLat: 33.4914,
+          centerLon: -112.077,
+          zoomLevel: 10,
+          basemapId: BasemapId.streetsNightVector,
+          widgets: {
+            basemapTogglePosition: WidgetPosition.bottomRight,
+            zoomPosition: WidgetPosition.topLeft,
+          },
+        },
+      },
+      randomPtsPhxUrl: 'https://fakeurl.to/RandomPointsPhx',
     };
   }
 
