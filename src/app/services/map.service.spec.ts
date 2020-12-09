@@ -146,4 +146,42 @@ describe('MapService', () => {
       TypeMoq.Times.exactly(1)
     );
   });
+
+  it('should remove all points from map', () => {
+    const zoomToDefaultExtent = false;
+
+    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+
+    service.map = mockMap.object;
+
+    service.removeAllPoints(zoomToDefaultExtent);
+
+    mockMap.verify((mock) => mock.removeAll(), TypeMoq.Times.exactly(1));
+  });
+
+  fit('should remove all points from map and zoom to default extent', () => {
+    const zoomToDefaultExtent = true;
+
+    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+
+    service.map = mockMap.object;
+    service.mapView = mockMapView.object;
+
+    service.removeAllPoints(zoomToDefaultExtent);
+    mockMap.verify((mock) => mock.removeAll(), TypeMoq.Times.exactly(1));
+    mockMapView.verify(
+      (mock) =>
+        mock.goTo(
+          TypeMoq.It.isObjectWith({
+            center: [
+              service.environment.baseConfigs.defaultMapSettings.centerLon,
+              service.environment.baseConfigs.defaultMapSettings.centerLat,
+            ],
+            zoom: service.environment.baseConfigs.defaultMapSettings.zoomLevel,
+          })
+        ),
+      TypeMoq.Times.exactly(1)
+    );
+  });
 });
