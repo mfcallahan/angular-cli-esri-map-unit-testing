@@ -2,8 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { TestBase } from 'src/test/testBase';
-import { IMapPoint } from '../interfaces/iMapPoint';
-
+import { IMapPoint } from 'src/app/interfaces/iMapPoint';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {

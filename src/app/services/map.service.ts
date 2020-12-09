@@ -24,7 +24,7 @@ export class MapService {
   // Initialize a default Map object for the app, which is rendered with a MapView that is bound to the DOM
   // element inside parameter 'mapElementRef'
   public async initDefaultMap(
-    basemap: string,
+    basemapId: BasemapId,
     centerLon: number,
     centerLat: number,
     zoomLevel: number,
@@ -36,7 +36,7 @@ export class MapService {
 
     const [Map, MapView] = await this.esriLoaderWrapperService.loadModules(['esri/Map', 'esri/views/MapView']);
 
-    this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap });
+    this.map = this.esriLoaderWrapperService.getInstance<esri.Map>(Map, { basemap: basemapId });
 
     this.mapView = this.esriLoaderWrapperService.getInstance<esri.MapView>(MapView, {
       map: this.map,
@@ -51,7 +51,7 @@ export class MapService {
 
   // Creates instances of widgets and add them to the MapView
   public async addAllMapWidgets(
-    basemapToggleId: BasemapId,
+    nextBasemapId: BasemapId,
     basemapTogglePosition: WidgetPosition,
     zoomPosition: WidgetPosition
   ): Promise<void> {
@@ -62,15 +62,15 @@ export class MapService {
 
     const toggle = this.esriLoaderWrapperService.getInstance<esri.BasemapToggle>(BasemapToggle, {
       view: this.mapView,
-      nextBasemap: basemapToggleId.toString(),
+      nextBasemap: nextBasemapId,
     });
 
     const zoom = this.esriLoaderWrapperService.getInstance<esri.Zoom>(Zoom, {
       view: this.mapView,
     });
 
-    this.mapView?.ui.add(toggle, basemapTogglePosition.toString());
-    this.mapView?.ui.add(zoom, zoomPosition.toString());
+    this.mapView?.ui.add(toggle, basemapTogglePosition);
+    this.mapView?.ui.add(zoom, zoomPosition);
   }
 
   public removeAllPoints(zoomToDefaultExtent: boolean): void {

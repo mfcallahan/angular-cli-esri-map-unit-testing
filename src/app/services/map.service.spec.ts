@@ -6,7 +6,6 @@ import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.ser
 import { EnvironmentService } from './environment.service';
 import { WidgetPosition } from 'src/app/enums/widgetPosition';
 import { BasemapId } from 'src/app/enums/basemapId';
-
 import { MapService } from './map.service';
 
 describe('MapService', () => {
@@ -32,7 +31,7 @@ describe('MapService', () => {
 
   it('should initialize a default map', async () => {
     // initDefaultMap() parameter values
-    const basemap = 'streets';
+    const basemapId = BasemapId.streets;
     const centerLon = -112.077;
     const centerLat = 33.491;
     const zoomLevel = 10;
@@ -52,7 +51,7 @@ describe('MapService', () => {
     // Spy on the EsriLoaderWrapperService.getInstance() method, returning the correct instances of the mocked ArcGIS API modules
     // according to the arguments passed in.
     const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
-      .withArgs(jasmine.objectContaining(mockMap), jasmine.objectContaining({ basemap }))
+      .withArgs(jasmine.objectContaining(mockMap), jasmine.objectContaining({ basemap: basemapId }))
       .and.returnValue(mockMap.object)
       .withArgs(
         jasmine.objectContaining(mockMapView),
@@ -66,13 +65,16 @@ describe('MapService', () => {
       .and.returnValue(mockMapView.object);
 
     // Call the method under test.
-    await service.initDefaultMap(basemap, centerLon, centerLat, zoomLevel, elementRef);
+    await service.initDefaultMap(basemapId, centerLon, centerLat, zoomLevel, elementRef);
 
     // Assert the Spy objects were called.
     expect(loadModulesSpy).toHaveBeenCalledTimes(1);
     expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
 
-    // Assert the expected class properties were set with the expected values.
+    // Assert class properties were set with the expected values.
+    expect(service.defaultCenterLat).toBe(centerLat);
+    expect(service.defaultCenterLon).toBe(centerLon);
+    expect(service.defaultZoom).toBe(zoomLevel);
     expect(service.map).toBe(mockMap.object);
     expect(service.mapView).toBe(mockMapView.object);
   });
@@ -106,7 +108,7 @@ describe('MapService', () => {
     const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
       .withArgs(
         jasmine.objectContaining(mockBasemapToggle),
-        jasmine.objectContaining({ view: service.mapView, nextBasemap: basemapId.toString() })
+        jasmine.objectContaining({ view: service.mapView, nextBasemap: basemapId })
       )
       .and.returnValue(mockBasemapToggle.object)
       .withArgs(

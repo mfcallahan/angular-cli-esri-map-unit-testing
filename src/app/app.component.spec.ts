@@ -3,7 +3,7 @@ import { EnvironmentService } from './services/environment.service';
 import { TestBase } from 'src/test/testBase';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
-import { MapComponent } from './map/map.component';
+import { MapComponent } from 'src/app/components/map/map.component';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
