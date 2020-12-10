@@ -2,7 +2,6 @@ import { ElementRef, Injectable } from '@angular/core';
 import { EsriLoaderWrapperService } from 'src/app/services/esriLoaderWrapper.service';
 import { EnvironmentService } from './environment.service';
 import { IMapPoint } from 'src/app/interfaces/iMapPoint';
-import { BasemapId } from 'src/app/enums/basemapId';
 import esri = __esri; // Esri types
 
 // This class encapsulates the Esri MapView and methods to manipulate the map. It is a singleton service, provided in
@@ -13,6 +12,7 @@ import esri = __esri; // Esri types
 export class MapService {
   map?: esri.Map;
   mapView?: esri.MapView;
+  randomPointsLayer?: esri.FeatureLayer;
 
   constructor(readonly environment: EnvironmentService, readonly esriLoaderWrapperService: EsriLoaderWrapperService) {}
 
@@ -74,7 +74,7 @@ export class MapService {
   }
 
   public async addPointsToMap(mapPoints: Array<IMapPoint>): Promise<void> {
-    this.map?.removeAll();
+    this.removeAllPoints(false);
 
     const [Graphic, FeatureLayer] = await this.esriLoaderWrapperService.loadModules([
       'esri/Graphic',
@@ -82,7 +82,7 @@ export class MapService {
     ]);
 
     const graphics = mapPoints.map((point, i) => {
-      return new Graphic({
+      return this.esriLoaderWrapperService.getInstance<esri.Graphic>(Graphic, {
         attributes: {
           ObjectId: i + 1,
           location: point.location,
@@ -95,7 +95,7 @@ export class MapService {
       });
     });
 
-    const randomPointsLayer = new FeatureLayer({
+    const randomPointsLayer = this.esriLoaderWrapperService.getInstance<esri.FeatureLayer>(FeatureLayer, {
       source: graphics,
       objectIdField: 'OBJECTID',
       renderer: {
@@ -139,10 +139,10 @@ export class MapService {
 
     this.map?.layers.add(randomPointsLayer);
 
-    await this.zoomToLayer(randomPointsLayer);
+    await this.zoomToLayerExtent(randomPointsLayer);
   }
 
-  public async zoomToLayer(layer: esri.FeatureLayer): Promise<void> {
+  public async zoomToLayerExtent(layer: esri.FeatureLayer): Promise<void> {
     this.mapView?.goTo(await layer.queryExtent());
   }
 }

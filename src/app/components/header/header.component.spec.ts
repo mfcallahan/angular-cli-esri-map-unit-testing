@@ -34,13 +34,16 @@ describe('HeaderComponent', () => {
   });
 
   it('should load map data from API and add points to map', async () => {
+    // Act
     component.dataLoaded = false;
 
     const getRandomPointsInPhxSpy = createGetRandomPointsInPhxSpy();
     const addPointsToMapSpy = createAddPointsToMapSpy();
 
+    // Act
     await component.loadDataClick();
 
+    // Assert
     expect(component.showSpinner).toEqual(false);
     expect(component.dataLoaded).toEqual(true);
     expect(getRandomPointsInPhxSpy).toHaveBeenCalledTimes(1);
@@ -48,13 +51,16 @@ describe('HeaderComponent', () => {
   });
 
   it('should remove all points from map before loading map data from API and adding points to map', async () => {
+    // Arrange
     component.dataLoaded = true;
 
     const getRandomPointsInPhxSpy = createGetRandomPointsInPhxSpy();
     const addPointsToMapSpy = createAddPointsToMapSpy();
 
+    // Act
     await component.loadDataClick();
 
+    // Assert
     expect(component.showSpinner).toEqual(false);
     expect(component.dataLoaded).toEqual(true);
     expect(getRandomPointsInPhxSpy).toHaveBeenCalledTimes(1);
@@ -62,14 +68,17 @@ describe('HeaderComponent', () => {
   });
 
   it('should clear all map data', () => {
+    // Arrange
     component.dataLoaded = true;
 
     const removeAllDataSpy = spyOn(component.mapService, 'removeAllPoints').and.callFake(() => {
       return;
     });
 
+    // Act
     component.clearDataClick();
 
+    // Assert
     expect(component.dataLoaded).toEqual(false);
     expect(removeAllDataSpy).toHaveBeenCalledTimes(1);
   });
