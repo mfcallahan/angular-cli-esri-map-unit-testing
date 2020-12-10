@@ -34,6 +34,7 @@ describe('MapService', () => {
   });
 
   it('should initialize a default map', async () => {
+    // Arrange
     // initDefaultMap() parameter value
     const elementRef = new ElementRef(null);
 
@@ -70,7 +71,7 @@ describe('MapService', () => {
       )
       .and.returnValue(mockMapView.object);
 
-    // Call the method under test.
+    // Act - call the method under test.
     await service.initDefaultMap(elementRef);
 
     // Assert the Spy objects were called.
@@ -83,10 +84,9 @@ describe('MapService', () => {
   });
 
   it('should add widgets to MapView', async () => {
-    // Create mock types of the ArcGIS API modules that initDefaultMap() will load.
+    // Arrange
     const mockDefaultUi = TypeMoq.Mock.ofType<esri.DefaultUI>();
     const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
-    // Set up the 'ui' property of mockMapView to return an instance of the mockDefaultUi.
     mockMapView.setup((mock) => mock.ui).returns(() => mockDefaultUi.object);
 
     const mockBasemapToggle = TypeMoq.Mock.ofType<esri.BasemapToggle>();
@@ -96,13 +96,10 @@ describe('MapService', () => {
 
     const esriMockTypes = [mockBasemapToggle, mockZoom];
 
-    // Spy on the EsriLoaderWrapperService.loadModules() method and mock its return value to be an array of the mocked ArcGIS API modules.
     const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
       Promise.resolve(esriMockTypes)
     );
 
-    // Spy on the EsriLoaderWrapperService.getInstance() method, returning the correct instances of the mocked ArcGIS API modules
-    // according to the arguments passed in.
     const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
       .withArgs(
         jasmine.objectContaining(mockBasemapToggle),
@@ -120,14 +117,13 @@ describe('MapService', () => {
       )
       .and.returnValue(mockMapView.object);
 
-    // Call the method under test.
+    // Act
     await service.addAllMapWidgets();
 
-    // Assert the Spy objects were called.
+    // Assert
     expect(loadModulesSpy).toHaveBeenCalledTimes(1);
     expect(getInstanceSpy).toHaveBeenCalledTimes(esriMockTypes.length);
 
-    // Assert the widgets were added to MapService.mapView.ui
     mockDefaultUi.verify(
       (mock) =>
         mock.add(
@@ -148,18 +144,21 @@ describe('MapService', () => {
   });
 
   it('should remove all points from map', () => {
+    // Arrange
     const zoomToDefaultExtent = false;
 
     const mockMap = TypeMoq.Mock.ofType<esri.Map>();
-
     service.map = mockMap.object;
 
+    // Act
     service.removeAllPoints(zoomToDefaultExtent);
 
+    // Assert
     mockMap.verify((mock) => mock.removeAll(), TypeMoq.Times.exactly(1));
   });
 
-  fit('should remove all points from map and zoom to default extent', () => {
+  it('should remove all points from map and zoom to default extent', () => {
+    // Arrange
     const zoomToDefaultExtent = true;
 
     const mockMap = TypeMoq.Mock.ofType<esri.Map>();
@@ -168,7 +167,10 @@ describe('MapService', () => {
     service.map = mockMap.object;
     service.mapView = mockMapView.object;
 
+    // Act
     service.removeAllPoints(zoomToDefaultExtent);
+
+    // Assert
     mockMap.verify((mock) => mock.removeAll(), TypeMoq.Times.exactly(1));
     mockMapView.verify(
       (mock) =>
@@ -183,5 +185,81 @@ describe('MapService', () => {
         ),
       TypeMoq.Times.exactly(1)
     );
+  });
+
+  it('should add array of IMapPoint to map', async () => {
+    // Arrange
+    const points = TestBase.getIMapPointArray();
+    const mockGraphic = TypeMoq.Mock.ofType<esri.Graphic>();
+    const mockFeatureLayer = TypeMoq.Mock.ofType<esri.FeatureLayer>();
+
+    const esriMockTypes = [mockGraphic, mockFeatureLayer];
+
+    const mockCollection = TypeMoq.Mock.ofType<esri.Collection>();
+    const mockMap = TypeMoq.Mock.ofType<esri.Map>();
+    mockMap.setup((mock) => mock.layers).returns(() => mockCollection.object);
+    service.map = mockMap.object;
+
+    const removeAllPointsSpy = spyOn(service, 'removeAllPoints').and.callFake(() => {
+      return;
+    });
+
+    const getInstanceSpy = spyOn(service.esriLoaderWrapperService, 'getInstance')
+      .withArgs(
+        jasmine.objectContaining(mockGraphic),
+        jasmine.objectContaining({
+          attributes: {
+            ObjectId: jasmine.any(Number),
+            location: jasmine.any(String),
+          },
+          geometry: {
+            type: 'point',
+            longitude: jasmine.any(Number),
+            latitude: jasmine.any(Number),
+          },
+        })
+      )
+      .and.returnValue(mockGraphic.object)
+      .withArgs(
+        jasmine.objectContaining(mockFeatureLayer),
+        jasmine.objectContaining({
+          objectIdField: 'OBJECTID',
+          renderer: jasmine.any(Object),
+          popupTemplate: jasmine.any(Object),
+        })
+      )
+      .and.returnValue(mockFeatureLayer.object);
+
+    const loadModulesSpy = spyOn(service.esriLoaderWrapperService, 'loadModules').and.returnValue(
+      Promise.resolve(esriMockTypes)
+    );
+
+    const zoomToLayerSpy = spyOn(service, 'zoomToLayerExtent').and.callFake(async () => {
+      return;
+    });
+
+    // Act
+    await service.addPointsToMap(points);
+
+    // Assert
+    expect(removeAllPointsSpy).toHaveBeenCalledOnceWith(false);
+    expect(loadModulesSpy).toHaveBeenCalledTimes(1);
+    expect(getInstanceSpy).toHaveBeenCalled();
+    expect(zoomToLayerSpy).toHaveBeenCalledTimes(1);
+    mockCollection.verify((mock) => mock.add(TypeMoq.It.isAny()), TypeMoq.Times.exactly(1));
+  });
+
+  it('should zoom to the layers extent', async () => {
+    // Arrange
+    const mockMapView = TypeMoq.Mock.ofType<esri.MapView>();
+    service.mapView = mockMapView.object;
+
+    const mockFeatureLayer = TypeMoq.Mock.ofType<esri.FeatureLayer>();
+
+    // Act
+    await service.zoomToLayerExtent(mockFeatureLayer.object);
+
+    // Assert
+    mockMapView.verify((mock) => mock.goTo(TypeMoq.It.isAny()), TypeMoq.Times.exactly(1));
   });
 });
