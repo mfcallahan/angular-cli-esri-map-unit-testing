@@ -26,9 +26,12 @@ describe('ApiService', () => {
     // Inject HttpTestingController to create a mock httpClient instance.
     [HttpTestingController, ApiService],
     (httpMock: HttpTestingController, apiService: ApiService) => {
+      // Arrange
       const numPoints = 100;
       const mockParams = new HttpParams().set('numPoints', numPoints.toString());
       const mockResponse: Array<IMapPoint> = TestBase.getIMapPointArray();
+
+      // Act
       apiService.getRandomPointsInPhx(numPoints).subscribe((response) => {
         expect(response).toBe(mockResponse);
       });
@@ -36,6 +39,7 @@ describe('ApiService', () => {
       // Create a request using the mock HttpClient client, calling the mockUrl with mockParams and mockHeaders.
       const req = httpMock.expectOne([service.environment.randomPtsPhxUrl, mockParams.toString()].join('?'));
 
+      // Assert
       // Expect the request made by the mock HttpClient client to be a GET request.
       expect(req.request.method).toEqual('GET');
 

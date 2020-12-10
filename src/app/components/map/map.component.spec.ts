@@ -30,11 +30,14 @@ describe('MapComponent', () => {
   });
 
   it('should set up map after component view initialization', async () => {
+    // Arrange
     const initDefaultMapSpy = spyOn(component.mapService, 'initDefaultMap').and.returnValue(Promise.resolve());
     const addAllMapWidgetsSpy = spyOn(component.mapService, 'addAllMapWidgets').and.returnValue(Promise.resolve());
 
+    // Act
     await component.ngAfterViewInit();
 
+    // Assert
     expect(initDefaultMapSpy).toHaveBeenCalledOnceWith(component.mapElementRef);
     expect(addAllMapWidgetsSpy).toHaveBeenCalledTimes(1);
   });
