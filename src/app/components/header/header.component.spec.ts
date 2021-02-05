@@ -5,6 +5,7 @@ import { TestBase } from 'src/test/testBase';
 import { HeaderComponent } from './header.component';
 import { MapService } from 'src/app/services/map.service';
 import { ApiService } from 'src/app/services/api.service';
+import { MaterialModule } from 'src/app/material.module';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -13,7 +14,7 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HeaderComponent],
-      imports: [HttpClientTestingModule],
+      imports: [MaterialModule, HttpClientTestingModule],
       providers: [ApiService, MapService],
     }).compileComponents();
   });
