@@ -12,7 +12,7 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, MapComponent],
+      declarations: [AppComponent],
       imports: [MaterialModule],
       providers: [EnvironmentService],
     }).compileComponents();
@@ -21,7 +21,7 @@ describe('AppComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
-    loadCssSpy = spyOn(component.esriLoaderWrapperService, 'loadCss').and.returnValue();
+    loadCssSpy = spyOn(component.esriLoaderWrapperService, 'loadCss').and.callFake(() => { return; });
     fixture.detectChanges();
   });
 
